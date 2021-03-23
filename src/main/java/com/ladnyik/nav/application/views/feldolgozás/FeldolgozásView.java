@@ -148,13 +148,15 @@ public class FeldolgozásView extends Div {
 		StringBuffer sbfLapok = new StringBuffer("");
 		StringBuffer sbfKodok = new StringBuffer("");
 		int lineNumber=0;
+		String nyomtatvanyAzonosito;
 
-		sbfHeader.append("$ny_azon=2029\n");
+
 		lineNumber++;
 		Map<String, Integer> lapok = new TreeMap<String, Integer>();
 				
 		Workbook workbook = new XSSFWorkbook(is);
-
+		nyomtatvanyAzonosito = workbook.getSheetAt(0).getSheetName();
+		sbfHeader.append("$ny_azon=" + nyomtatvanyAzonosito + "\n");
 		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
 			Sheet sheet = workbook.getSheetAt(i);
 			//System.out.println(sheet.getSheetName());
