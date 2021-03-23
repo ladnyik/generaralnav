@@ -10,6 +10,7 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.Route;
@@ -54,14 +55,16 @@ public class FeldolgozásView extends Div {
 	MemoryBuffer bufferMdf = new MemoryBuffer();
 	Upload uploadMdf = new Upload(bufferMdf);
 	H2 h2Mdf = new H2("Mező definiciós file");
-	Anchor downloadMdf; 
+	VerticalLayout mdfLayout = new VerticalLayout();
+	Anchor downloadMdf = new Anchor(); 
 	ByteArrayOutputStream mdfBaos;
 	String nyomtatvanyMdf;
 	
 	MemoryBuffer bufferNyomtatvany = new MemoryBuffer();
 	Upload uploadNyomtatvany = new Upload(bufferNyomtatvany);
+	VerticalLayout nyomtatvanyLayout = new VerticalLayout();
 	H2 h2Nyomtatvany = new H2("Nyomtatvány file");
-	Anchor downloadNyomtatvany; 
+	Anchor downloadNyomtatvany  = new Anchor(); 
 	ByteArrayOutputStream mdfNyomtatvany;
 	String importString;
 	
@@ -72,14 +75,12 @@ public class FeldolgozásView extends Div {
         	System.out.println(event.getFileName());
         	System.out.println(bufferMdf.getInputStream());
         	try {
-        		if (downloadMdf != null) {
-        			remove(downloadMdf);
-        		}
-        		
-        		mdfBaos = processMdf(bufferMdf.getInputStream());
-				
+        		mdfLayout.remove(downloadMdf);
+        		downloadMdf.setVisible(false);        		
+        		mdfBaos = processMdf(bufferMdf.getInputStream());				
 				downloadMdf = new Anchor(new StreamResource(nyomtatvanyMdf+"_minta.xlsx", ()-> createMdfResource()), "Download " + nyomtatvanyMdf + "_minta" );
-		        add(downloadMdf);
+				downloadMdf.setVisible(true);
+				mdfLayout.add(downloadMdf);
 		        
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -93,21 +94,19 @@ public class FeldolgozásView extends Div {
         });
         
         uploadMdf.getElement().addEventListener("file-remove", event -> {
-    		if (downloadMdf != null) {
-    			remove(downloadMdf);
-    		}
+    		mdfLayout.remove(downloadMdf);
+    		downloadMdf.setVisible(false); 
         });
         
         uploadNyomtatvany.addSucceededListener(event -> {
 
         	try {
-        		if (downloadNyomtatvany != null) {
-        			remove(downloadNyomtatvany);
-        		}
-        		importString = processNyomtatvany(bufferNyomtatvany.getInputStream()); 
-				
+       			downloadNyomtatvany.setVisible(false);
+        		nyomtatvanyLayout.remove(downloadNyomtatvany);        		    		
+        		importString = processNyomtatvany(bufferNyomtatvany.getInputStream()); 				
 				downloadNyomtatvany = new Anchor(new StreamResource("out.imp", ()-> createNyomtavanyResource()), "Download " + " out.imp" );
-		        add(downloadNyomtatvany);
+				downloadNyomtatvany.setVisible(true);
+				nyomtatvanyLayout.add(downloadNyomtatvany);
 		        
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -118,13 +117,12 @@ public class FeldolgozásView extends Div {
         
         
         uploadNyomtatvany.getElement().addEventListener("file-remove", event -> {
-    		if (downloadNyomtatvany != null) {
-    			remove(downloadNyomtatvany);
-    		}
+   			downloadNyomtatvany.setVisible(false);
+    		nyomtatvanyLayout.remove(downloadNyomtatvany); 
         });
         
-        add(h2Mdf, uploadMdf);
-        add(h2Nyomtatvany, uploadNyomtatvany);
+        add(h2Mdf, uploadMdf, mdfLayout);
+        add(h2Nyomtatvany, uploadNyomtatvany,nyomtatvanyLayout);
         
     }
     
