@@ -179,10 +179,12 @@ public class FeldolgozásView extends Div {
 					Cell cell = cellIterator.next();
 					if (cell != null) {
 						if ( lapos ) {
-							sbfKodok.append(String.format("%s[%d]=%s\n", Utils.getCellAsString(codeRow.getCell(cell.getColumnIndex())), pageNumber, Utils.getCellAsString(cell)));
+							if (Utils.getCellAsString(cell).length() > 0)
+								sbfKodok.append(String.format("%s[%d]=%s\n", Utils.getCellAsString(codeRow.getCell(cell.getColumnIndex())), pageNumber, Utils.getCellAsString(cell)));
 						}
 						else	
-							sbfKodok.append(String.format("%s=%s\n", Utils.getCellAsString(codeRow.getCell(cell.getColumnIndex())), Utils.getCellAsString(cell)));
+							if (Utils.getCellAsString(cell).length() > 0)
+								sbfKodok.append(String.format("%s=%s\n", Utils.getCellAsString(codeRow.getCell(cell.getColumnIndex())), Utils.getCellAsString(cell)));
 						lineNumber++;
 					}
 				}

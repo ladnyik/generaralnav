@@ -8,9 +8,9 @@ public class Utils {
 	public static String getCellAsString(Cell cell) {
 
 		if (cell.getCellType() == CellType.NUMERIC) {
-			return Integer.toString((int) cell.getNumericCellValue());
+			return Long.toString((long) cell.getNumericCellValue()).trim();
 		} else if (cell.getCellType() == CellType.STRING) {
-			return cell.getStringCellValue();
+			return cell.getStringCellValue().trim();
 		}
 		return null;
 	}
