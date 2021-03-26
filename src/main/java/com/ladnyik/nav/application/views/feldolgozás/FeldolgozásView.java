@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -155,6 +156,7 @@ public class FeldolgozásView extends Div {
 		Map<String, Integer> lapok = new TreeMap<String, Integer>();
 				
 		Workbook workbook = new XSSFWorkbook(is);
+		FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator(); 
 		nyomtatvanyAzonosito = workbook.getSheetAt(0).getSheetName();
 		sbfHeader.append("$ny_azon=" + nyomtatvanyAzonosito + "\n");
 		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
@@ -164,7 +166,7 @@ public class FeldolgozásView extends Div {
 			Iterator<Cell> cellIterator = sheet.getRow(2).iterator();
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
-				if (Utils.getCellAsString(cell).contains("lapszám")) {
+				if (Utils.getCellAsString(cell, evaluator).contains("lapszám")) {
 					lapos = true;
 					break;
 				}				
@@ -179,12 +181,12 @@ public class FeldolgozásView extends Div {
 					Cell cell = cellIterator.next();
 					if (cell != null) {
 						if ( lapos ) {
-							if (Utils.getCellAsString(cell).length() > 0)
-								sbfKodok.append(String.format("%s[%d]=%s\n", Utils.getCellAsString(codeRow.getCell(cell.getColumnIndex())), pageNumber, Utils.getCellAsString(cell)));
+							if (Utils.getCellAsString(cell, evaluator).length() > 0)
+								sbfKodok.append(String.format("%s[%d]=%s\n", Utils.getCellAsString(codeRow.getCell(cell.getColumnIndex()), evaluator), pageNumber, Utils.getCellAsString(cell, evaluator)));
 						}
 						else	
-							if (Utils.getCellAsString(cell).length() > 0)
-								sbfKodok.append(String.format("%s=%s\n", Utils.getCellAsString(codeRow.getCell(cell.getColumnIndex())), Utils.getCellAsString(cell)));
+							if (Utils.getCellAsString(cell, evaluator).length() > 0)
+								sbfKodok.append(String.format("%s=%s\n", Utils.getCellAsString(codeRow.getCell(cell.getColumnIndex()), evaluator), Utils.getCellAsString(cell, evaluator)));
 						lineNumber++;
 					}
 				}
@@ -232,11 +234,12 @@ public class FeldolgozásView extends Div {
     	    	
 		Map<String, ArrayList<NyomtatvanyElement>> lapoKodok = new LinkedHashMap<String, ArrayList<NyomtatvanyElement>>();
 		XSSFWorkbook workbookOut = new XSSFWorkbook();
+
 		String nyomtatvanyNev = null;
 		String previousLap = "";
 		String actualPage = "";
 		Workbook workbook = new XSSFWorkbook(is);
-		
+		FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();		
 		Sheet datatypeSheet = workbook.getSheetAt(0);
 		Iterator<Row> iterator = datatypeSheet.iterator();
 		boolean first = true;
@@ -244,8 +247,8 @@ public class FeldolgozásView extends Div {
 			Row currentRow = iterator.next();
 			if (!first) {
 				if (nyomtatvanyNev == null)
-					nyomtatvanyNev = Utils.getCellAsString(currentRow.getCell(5));
-				actualPage = Utils.getCellAsString(currentRow.getCell(5));
+					nyomtatvanyNev = Utils.getCellAsString(currentRow.getCell(5), evaluator);
+				actualPage = Utils.getCellAsString(currentRow.getCell(5), evaluator);
 				ArrayList<NyomtatvanyElement> kodok;
 				if (lapoKodok.containsKey(actualPage)) {
 					kodok = lapoKodok.get(actualPage);
@@ -255,11 +258,11 @@ public class FeldolgozásView extends Div {
 				}
 				kodok.add(new NyomtatvanyElement(
 						actualPage, 
-						Utils.getCellAsString(currentRow.getCell(1)), 
-						Utils.getCellAsString(currentRow.getCell(2)), 
-						Utils.getCellAsString(currentRow.getCell(3)), 
-						Utils.getCellAsString(currentRow.getCell(4)),
-						Utils.getCellAsString(currentRow.getCell(9))
+						Utils.getCellAsString(currentRow.getCell(1), evaluator), 
+						Utils.getCellAsString(currentRow.getCell(2), evaluator), 
+						Utils.getCellAsString(currentRow.getCell(3), evaluator), 
+						Utils.getCellAsString(currentRow.getCell(4), evaluator),
+						Utils.getCellAsString(currentRow.getCell(9), evaluator)
 						)
 				);
 			}
